@@ -12,7 +12,7 @@ class Amine:
   max_x = 8
   max_y = 8
   max_mines = 10
-  coveredField = max_x * max_y - max_mines
+  coveredField = []
 
 
   def __init__(self):
@@ -66,20 +66,30 @@ class Amine:
     self.fields[mine[0]][mine[1]]['ismine'] = 0
         
 
-  def clickOnField(self, click):
+  def selectField(self, click):
     self.fields[click[0]][click[1]]['clicked'] = 1
-    self.coveredField = self.coveredField - 1
 
     if self.fields[click[0]][click[1]]['ismine']:
-      print 'YU BiCCS DIED'
+      print '\033[1;31mSo LAME, You Died!\033[0m'
       return 0
-    
-    if self.coveredField == 0:
-      print 'YU WIN!!!'
+
+    if self.getRemianing() == 0:
+      print '\033[1;34mCool, You WIN!!!\033[0m'
       return 0
 
     return 1
   
+
+  def getRemianing(self):
+    remaining = 0
+    for row in self.fields:
+
+      for col in row:
+        if not (col.has_key('clicked') and col['clicked']) and not (col.has_key('ismine') and col['ismine']):
+          remaining = remaining + 1
+
+    return remaining
+
 
   def readClicks(self):
 
@@ -88,7 +98,7 @@ class Amine:
       try:
         x = self.readX()
         y = self.readY()
-        result = self.clickOnField([x, y])
+        result = self.selectField([x, y])
         self.printMiner()
 
         if result == 1:
@@ -105,7 +115,11 @@ class Amine:
     
 
   def readX(self):
-    x = input('X? ')
+    try:
+      x = input('X? ')
+    except SyntaxError:
+      self.readX()
+      return -1
 
     while x < 0 or x > self.max_x:
       x = self.readX()
@@ -114,7 +128,11 @@ class Amine:
     
 
   def readY(self):
-    y = input('Y? ')
+    try:
+      y = input('Y? ')
+    except SyntaxError:
+      self.readY()
+      return -1
 
     while y < 0 or y > self.max_y:
       y = self.readY()
@@ -154,12 +172,14 @@ class Amine:
 
             for neighbour in neighbours['neighbours']:
               if not self.fields[neighbour[0]][neighbour[1]].has_key('clicked') or not self.fields[neighbour[0]][neighbour[1]]['clicked']:
-                self.clickOnField([neighbour[0], neighbour[1]])
+                self.selectField([neighbour[0], neighbour[1]])
 
         print self.printMine(i, j, self.fields[i][j]),
 
       print
       #print 'coveredFieldNum: ', self.coveredField
+    print 'remaining: ', self.getRemianing()
+
 
   def getNeighbours(self, field):
     x = field[0]
@@ -184,8 +204,6 @@ class Amine:
           pass
     #print out
     return out
-
-
 
 
 
