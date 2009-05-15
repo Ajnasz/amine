@@ -8,8 +8,8 @@ class Amine:
   mines = []
   clicked = []
   fields = []
-  maxX = 8
-  maxY = 8
+  max_x = 8
+  max_y = 8
 
 
   def __init__(self):
@@ -27,11 +27,11 @@ class Amine:
     self.fields = []
     x = 0
 
-    while x < self.maxX:
+    while x < self.max_x:
       self.fields.append([])
       y = 0
 
-      while y < self.maxY:
+      while y < self.max_y:
         self.fields[x].append({'ismine': 0})
         y = y+1
         
@@ -40,12 +40,14 @@ class Amine:
     
   def genMines(self, clicked):
     i = 0
+    nums = ([1,1], [2,3], [5,5], [0,6], [7,3], [7,7], [0,7], [5,4], [4,5], [3,5])
+    for i in nums:
+      self.setMine(i)
+    #while i < 10:
+    #  random_num = [random.randint(0,self.max_x-1), random.randint(0,self.max_y-1)]
 
-    while i < 10:
-      random_num = [random.randint(0,self.maxX-1), random.randint(0,self.maxY-1)]
-
-      if self.setMine(random_num):
-        i = i+1
+    #  if self.setMine(random_num):
+    #    i = i+1
 
   
   def setMine(self, mine):
@@ -62,13 +64,13 @@ class Amine:
         
 
   def clickOnField(self, click):
-      self.fields[click[0]][click[1]]['clicked'] = 1
+    self.fields[click[0]][click[1]]['clicked'] = 1
 
-      if self.fields[click[0]][click[1]]['ismine']:
-        print 'YU BiCCS DIED'
-        return 0
+    if self.fields[click[0]][click[1]]['ismine']:
+      print 'YU BiCCS DIED'
+      return 0
 
-      return 1
+    return 1
   
 
   def readClicks(self):
@@ -144,33 +146,12 @@ class Amine:
           else:
             neighbours = self.getNeighbours([i,j])
             if neighbours['sum'] == 0:
-              if neighbours['tl']['mine'] != -1:
-                self.clickOnField([neighbours['tl']['x'], neighbours['tl']['y']])
+              sections = ('tl', 't', 'tr', 'l', 'r', 'bl', 'b', 'br')
 
-              if neighbours['t']['mine'] != -1:
-                self.clickOnField([neighbours['t']['x'], neighbours['t']['y']])
+              for section in sections:
 
-              if neighbours['tr']['mine'] != -11:
-                self.clickOnField([neighbours['tr']['x'], neighbours['tr']['y']])
-
-              if neighbours['l']['mine'] != -1:
-                self.clickOnField([neighbours['l']['x'], neighbours['l']['y']])
-
-              if neighbours['r']['mine'] != -1:
-                self.clickOnField([neighbours['r']['x'], neighbours['r']['y']])
-
-              if neighbours['bl']['mine'] != -1:
-                try:
-                  self.clickOnField([neighbours['bl']['x'], neighbours['bl']['y']])
-                except:
-                  print neighbours['bl']['mine']
-                  exit
-
-              if neighbours['b']['mine'] != -1:
-                self.clickOnField([neighbours['b']['x'], neighbours['b']['y']])
-
-              if neighbours['br']['mine'] != -1:
-                self.clickOnField([neighbours['br']['x'], neighbours['br']['y']])
+                if neighbours[section]['mine'] == -1:
+                  self.clickOnField([neighbours[section]['x'], neighbours[section]['y']])
 
             print self.printMine(i, j, 2, neighbours['sum']),
 
@@ -178,6 +159,7 @@ class Amine:
           print self.printMine(i, j, -1),
 
       print
+      print self.max_x*6*'-'
 
 
   def getNeighbours(self, field):
@@ -227,62 +209,85 @@ class Amine:
       'sum': 0
     }
 
-    if x > 0:
-      if self.fields[x-1][y].has_key('ismine') and self.fields[x-1][y]['ismine'] == 1:
-        neighbours['sum'] = neighbours['sum']+1
-        neighbours['l']['mine'] = 1
-      else:
-        neighbours['l']['mine'] = 0
+    if x > 0: # az aktualis elem nem az elso sorban van
+      prev_row = self.fields[x-1]
 
-      if y > 0:
-        if self.fields[x-1][y-1].has_key('ismine') and self.fields[x-1][y-1]['ismine'] == 1:
-          neighbours['sum'] = neighbours['sum']+1
-          neighbours['tl']['mine'] = 1
-        else:
-          neighbours['tl']['mine'] = 0
-
-      if y < self.maxY-2:
-        if self.fields[x-1][y+1].has_key('ismine') and self.fields[x-1][y+1]['ismine'] == 1:
-          neighbours['sum'] = neighbours['sum']+1
-          neighbours['tr']['mine'] = 1
-        else:
-          neighbours['tr']['mine'] = 0
-
-    if x < self.maxX-2:
-
-      if self.fields[x+1][y].has_key('ismine') and self.fields[x+1][y]['ismine'] == 1:
-        neighbours['sum'] = neighbours['sum']+1
-        neighbours['b']['mine'] = 1
-      else:
-        neighbours['b']['mine'] = 0
-
-      if y > 0:
-        if self.fields[x+1][y-1].has_key('ismine') and self.fields[x+1][y-1]['ismine'] == 1:
-          neighbours['sum'] = neighbours['sum']+1
-          neighbours['bl']['mine'] = 1
-        else:
-          neighbours['bl']['mine'] = 0
-
-      if y < self.maxY-2:
-        if self.fields[x+1][y+1].has_key('ismine') and self.fields[x+1][y+1]['ismine'] == 1:
-          neighbours['sum'] = neighbours['sum']+1
-          neighbours['br']['mine'] = 1
-        else:
-          neighbours['br']['mine'] = 0
-      
-    if y > 0:
-      if self.fields[x][y-1].has_key('ismine') and self.fields[x][y-1]['ismine'] == 1:
-        neighbours['sum'] = neighbours['sum']+1
+      if prev_row[y].has_key('ismine') and prev_row[y]['ismine']: # t
         neighbours['t']['mine'] = 1
-      else:
-        neighbours['t']['mine'] = 0
+        neighbours['sum'] = neighbours['sum'] + 1
 
-    if y < self.maxY-2:
-      if self.fields[x][y+1].has_key('ismine') and self.fields[x][y+1]['ismine'] == 1:
-        neighbours['sum'] = neighbours['sum']+1
-        neighbours['b']['mine'] = 1
+      if y > 0: #nem elso sor nem elso oszlopa
+        if prev_row[y-1].has_key('ismine' and prev_row[y-1]['ismine']): # tr
+          neighbours['tl']['mine'] = 1
+          neighbours['sum'] = neighbours['sum'] + 1
       else:
-        neighbours['b']['mine'] = 0
+        neighbours['tl']['y'] = y
+
+      if y < self.max_y - 1: #nem elso sor nem utolso oszlopa
+        
+        if prev_row[y+1].has_key('ismine') and prev_row[y+1]['ismine']: # tl
+          neighbours['tr']['mine'] = 1
+          neighbours['sum'] = neighbours['sum'] + 1
+      else:
+        neighbours['tr']['y'] = y
+
+    else:
+      neighbours['t']['x'] = neighbours['tl']['x'] = neighbours['tr']['x'] = x
+
+      
+    if x < self.max_x - 1: # nem utolso sor
+      next_row = self.fields[x+1]
+
+      if next_row[y].has_key('ismine') and next_row[y]['ismine']: # b
+        neighbours['b']['mine'] = 1
+        neighbours['sum'] = neighbours['sum'] + 1
+
+
+      if y > 0: # nem utolso sor nem elso oszlopa
+        
+        if next_row[y-1].has_key('ismine') and next_row[y-1]['ismine']: # br
+          neighbours['bl']['mine'] = 1
+          neighbours['sum'] = neighbours['sum'] + 1
+
+      else:
+        neighbours['bl']['y'] = y
+
+
+      if y < self.max_y - 1: #nem elso sor nem utolso oszlopa
+        
+        if next_row[y+1].has_key('ismine') and next_row[y+1]['ismine']: # bl
+          neighbours['br']['mine'] = 1
+          neighbours['sum'] = neighbours['sum'] + 1
+
+
+      else:
+        neighbours['br']['y'] = self.max_y - 1
+
+
+    else:
+      neighbours['b']['x'] = neighbours['bl']['x'] = neighbours['br']['x'] = self.max_x - 1
+
+
+    if y > 0: #nem elso oszolop
+      prev_col = self.fields[x][y-1]
+
+      if prev_col.has_key('ismine') and prev_col['ismine']: # l
+        self.fields[x][y-1]['mine'] = 1
+        neighbours['l']['mine'] = 1
+        neighbours['sum'] = neighbours['sum'] + 1
+
+    else:
+      neighbours['l']['y'] = 0
+
+    if y < self.max_y - 1: #nem utolso oszlop
+      next_col = self.fields[x][y+1]
+      
+      if next_col.has_key('ismine') and next_col['ismine']:
+        neighbours['r']['mine'] = 1
+        neighbours['sum'] = neighbours['sum'] + 1
+
+    else:
+      neighbours['r']['y'] = self.max_y - 1
 
     self.fields[x][y]['neighbours'] = neighbours['sum']
     return neighbours
