@@ -103,7 +103,7 @@ class Amine:
   def readCoords(self, first=0):
     '''
     Reads the coordinates from the terminal
-    if the 'first' parameter true, then the
+    if the 'first' parameter is true, then the
     mines will be generated in that step, the
     first selected field won't be a mine
     '''
@@ -140,8 +140,8 @@ class Amine:
   def readX(self):
     '''
     Reads the X coordinate from the terminal
-    checks that the coordinate is valid, if
-    not, then asks again for that
+    and checks that the coordinate is valid,
+    if not, then asks again for it.
     '''
     try:
       x = input('X? ')
@@ -150,7 +150,7 @@ class Amine:
       return -1
 
     while x < 0 or x >= self.max_x:
-      print 'Wrong Y coordinate, it should be between 0 and %d' % (self.max_x-1)
+      print 'Wrong coordinate, it should be between 0 and %d' % (self.max_x-1)
       x = self.readX()
       
     return x
@@ -159,8 +159,8 @@ class Amine:
   def readY(self):
     '''
     Reads the Y coordinate from the terminal
-    checks that the coordinate is valid, if
-    not, then asks again for that
+    and checks that the coordinate is valid,
+    if not, then asks again for it
     '''
     try:
       y = input('Y? ')
@@ -169,7 +169,7 @@ class Amine:
       return -1
 
     while y < 0 or y >= self.max_y:
-      print 'Wrong Y coordinate, it should be between 0 and %d' % (self.max_y-1)
+      print 'Wrong coordinate, it should be between 0 and %d' % (self.max_y-1)
       y = self.readY()
 
     return y
@@ -177,7 +177,7 @@ class Amine:
   
   def printField(self, x, y, field, force=0):
     '''
-    Prints a field, depends on its current state
+    Prints a field, depending on its current state
     '''
 
     output = ''
@@ -266,7 +266,7 @@ except:
   y = 8
 
 try:
-  mines = int(sys.argv[3]) or 10
+  mines = int(sys.argv[3])
 except:
   mines = 10
 
