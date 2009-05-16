@@ -1,6 +1,7 @@
 #!/usr/bin/python
 import random
 import sys
+import measuretime
 
 
 class Amine:
@@ -19,6 +20,8 @@ class Amine:
     self.mines = []
     self.genFields()
     self.genMines([1,1])
+    self.measureTime = measuretime.MeasureTime()
+    self.measureTime.start()
     # print self.mines
 
 
@@ -75,6 +78,7 @@ class Amine:
 
     if self.getRemaining() == 0:
       print '\033[1;34mCool, You WIN!!!\033[0m'
+      print 'Elapsed time: %d sec' % (int(self.measureTime.finish()))
       return 0
 
     return 1
