@@ -6,21 +6,23 @@ import measuretime
 
 class Amine:
   '''A minesweeper game'''
+
+
+  def __init__(self, x = 8, y = 8, mines = 10):
+    self.max_x = x
+    self.max_y = y
+    self.max_mines = mines
+
+    self.mines = []
+    print 'x: %d, y: %d, mines: %d' % (self.max_x, self.max_y, self.max_mines)
+    self.genFields()
+    # print self.mines
+
   
   mines = []
   clicked = []
   fields = []
-  max_x = 8
-  max_y = 8
-  max_mines = 10
   message = ''
-
-
-  def __init__(self):
-    self.mines = []
-    self.genFields()
-    # print self.mines
-
 
   def start(self):
     self.measureTime = measuretime.MeasureTime()
@@ -41,6 +43,8 @@ class Amine:
         y = y+1
         
       x = x+1
+
+    print x
     
     
   def genMines(self, click):
@@ -145,7 +149,8 @@ class Amine:
       self.readX()
       return -1
 
-    while x < 0 or x > self.max_x:
+    while x < 0 or x >= self.max_x:
+      print 'Wrong Y coordinate, it should be between 0 and %d' % (self.max_x-1)
       x = self.readX()
       
     return x
@@ -163,7 +168,8 @@ class Amine:
       self.readY()
       return -1
 
-    while y < 0 or y > self.max_y:
+    while y < 0 or y >= self.max_y:
+      print 'Wrong Y coordinate, it should be between 0 and %d' % (self.max_y-1)
       y = self.readY()
 
     return y
@@ -249,5 +255,20 @@ class Amine:
 
 
 
-miner = Amine()
+try:
+  x = int(sys.argv[1])
+except:
+  x = 8
+
+try:
+  y = int(sys.argv[2])
+except:
+  y = 8
+
+try:
+  mines = int(sys.argv[3]) or 10
+except:
+  mines = 10
+
+miner = Amine(x, y, mines)
 miner.start()
