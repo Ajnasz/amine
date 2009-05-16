@@ -150,7 +150,7 @@ class Amine:
       return -1
 
     while x < 0 or x >= self.max_x:
-      print 'Wrong coordinate, it should be between 0 and %d' % (self.max_x-1)
+      print 'Wrong X coordinate, it should be between 0 and %d' % (self.max_x-1)
       x = self.readX()
       
     return x
@@ -169,7 +169,7 @@ class Amine:
       return -1
 
     while y < 0 or y >= self.max_y:
-      print 'Wrong coordinate, it should be between 0 and %d' % (self.max_y-1)
+      print 'Wrong Y coordinate, it should be between 0 and %d' % (self.max_y-1)
       y = self.readY()
 
     return y
@@ -177,7 +177,7 @@ class Amine:
   
   def printField(self, x, y, field, force=0):
     '''
-    Prints a field, depending on its current state
+    Prints a field, depending on it's current state
     '''
 
     output = ''
