@@ -73,14 +73,14 @@ class Amine:
       print '\033[1;31mSo LAME, You Died!\033[0m'
       return 0
 
-    if self.getRemianing() == 0:
+    if self.getRemaining() == 0:
       print '\033[1;34mCool, You WIN!!!\033[0m'
       return 0
 
     return 1
   
 
-  def getRemianing(self):
+  def getRemaining(self):
     remaining = 0
     for row in self.fields:
 
@@ -178,7 +178,7 @@ class Amine:
 
       print
       #print 'coveredFieldNum: ', self.coveredField
-    print 'remaining: ', self.getRemianing()
+    print 'remaining: ', self.getRemaining()
 
 
   def getNeighbours(self, field):
