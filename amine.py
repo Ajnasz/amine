@@ -13,13 +13,14 @@ class Amine:
   max_x = 8
   max_y = 8
   max_mines = 10
+  message = ''
   coveredField = []
 
 
   def __init__(self):
     self.mines = []
     self.genFields()
-    self.genMines([1,1])
+    self.genMines([random.randint(0,self.max_x-1), random.randint(0,self.max_y-1)])
     self.measureTime = measuretime.MeasureTime()
     self.measureTime.start()
     # print self.mines
@@ -73,12 +74,12 @@ class Amine:
     self.fields[click[0]][click[1]]['clicked'] = 1
 
     if self.fields[click[0]][click[1]]['ismine']:
-      print '\033[1;31mSo LAME, You Died!\033[0m'
+      self.message = '\033[1;31mSo LAME, You Died!\033[0m'
       return 0
 
     if self.getRemaining() == 0:
-      print '\033[1;34mCool, You WIN!!!\033[0m'
-      print 'Elapsed time: %d sec' % (int(self.measureTime.finish()))
+      self.message = '\033[1;34mCool, You WIN!\033[0m'
+      self.message += '\nElapsed time: %d sec' % (int(self.measureTime.finish()))
       return 0
 
     return 1
@@ -163,6 +164,12 @@ class Amine:
 
 
   def printMiner(self):
+      
+    import os
+    os.system(['clear','cls'][os.name == 'nt'])
+    if self.message:
+      print self.message
+      self.message = ''
 
     for i, line in enumerate(self.fields):
 
