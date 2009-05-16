@@ -14,20 +14,18 @@ class Amine:
   max_y = 8
   max_mines = 10
   message = ''
-  coveredField = []
 
 
   def __init__(self):
     self.mines = []
     self.genFields()
-    self.genMines([random.randint(0,self.max_x-1), random.randint(0,self.max_y-1)])
-    self.measureTime = measuretime.MeasureTime()
-    self.measureTime.start()
     # print self.mines
 
 
   def start(self):
-    self.readClicks()
+    self.measureTime = measuretime.MeasureTime()
+    self.measureTime.start()
+    self.readCoords(1)
 
   
   def genFields(self):
@@ -45,7 +43,7 @@ class Amine:
       x = x+1
     
     
-  def genMines(self, clicked):
+  def genMines(self, click):
     # nums = ([1,1], [2,3], [5,5], [0,6], [7,3], [7,7], [0,7], [5,4], [4,5], [3,5])
     # for i in nums:
     #   self.setMine(i)
@@ -53,8 +51,9 @@ class Amine:
     while i < self.max_mines:
       random_num = [random.randint(0,self.max_x-1), random.randint(0,self.max_y-1)]
 
-      if self.setMine(random_num):
-        i = i+1
+      if random_num != click:
+        if self.setMine(random_num):
+          i = i+1
 
   
   def setMine(self, mine):
@@ -75,14 +74,14 @@ class Amine:
 
     if self.fields[click[0]][click[1]]['ismine']:
       self.message = '\033[1;31mSo LAME, You Died!\033[0m'
-      return 0
+      return 1
 
     if self.getRemaining() == 0:
-      self.message = '\033[1;34mCool, You WIN!\033[0m'
+      self.message = '\033[1;32mCool, You WIN!\033[0m'
       self.message += '\nElapsed time: %d sec' % (int(self.measureTime.finish()))
-      return 0
+      return 2
 
-    return 1
+    return 0
   
 
   def getRemaining(self):
@@ -90,24 +89,39 @@ class Amine:
     for row in self.fields:
 
       for col in row:
+
         if not (col.has_key('clicked') and col['clicked']) and not (col.has_key('ismine') and col['ismine']):
           remaining = remaining + 1
 
     return remaining
 
 
-  def readClicks(self):
+  def readCoords(self, first=0):
+    '''
+    Reads the coordinates from the terminal
+    if the 'first' parameter true, then the
+    mines will be generated in that step, the
+    first selected field won't be a mine
+    '''
 
     while(1):
 
       try:
         x = self.readX()
         y = self.readY()
-        result = self.selectField([x, y])
-        self.printMiner()
 
-        if result == 1:
-          self.readClicks()
+        if first:
+          self.genMines([x,y])
+          # TODO should be removed, because it's just a
+          #   workaround to show the fully cleaned minefield
+          #   after the first selection too
+          self.printMiner() 
+
+        isEnd = self.selectField([x, y])
+        self.printMiner(isEnd)
+
+        if not isEnd:
+          self.readCoords()
 
         else:
           break
@@ -120,6 +134,11 @@ class Amine:
     
 
   def readX(self):
+    '''
+    Reads the X coordinate from the terminal
+    checks that the coordinate is valid, if
+    not, then asks again for that
+    '''
     try:
       x = input('X? ')
     except SyntaxError:
@@ -133,6 +152,11 @@ class Amine:
     
 
   def readY(self):
+    '''
+    Reads the Y coordinate from the terminal
+    checks that the coordinate is valid, if
+    not, then asks again for that
+    '''
     try:
       y = input('Y? ')
     except SyntaxError:
@@ -145,12 +169,20 @@ class Amine:
     return y
 
   
-  def printMine(self, x, y, field):
+  def printField(self, x, y, field, force=0):
+    '''
+    Prints a field, depends on its current state
+    '''
+
     output = ''
-    if field.has_key('clicked') and field['clicked']:
+    if force or (field.has_key('clicked') and field['clicked']):
 
       if field['ismine']:
-        output = '\033[0;31m[xxx]\033[00m'
+        if force and force == 2:
+          output = '\033[0;35m[xxx]\033[00m'
+        else:
+          output = '\033[0;31m[xxx]\033[00m'
+
 
       elif field['neighbours'] > 0:
         output = '\033[0;32m[%s]\033[00m' % (str(field['neighbours']).center(3))
@@ -163,7 +195,7 @@ class Amine:
     return output
 
 
-  def printMiner(self):
+  def printMiner(self, isEnd=0):
       
     import os
     os.system(['clear','cls'][os.name == 'nt'])
@@ -178,17 +210,16 @@ class Amine:
         if not row.has_key('clicked') or not row['clicked'] == 1 or not row.has_key('ismine') or not row['ismine'] == 1:
           neighbours = self.getNeighbours([i,j])
           self.fields[i][j]['neighbours'] = neighbours['sum']
+
           if neighbours['sum'] == 0:
-            # print 'neighbours: ', neighbours
 
             for neighbour in neighbours['neighbours']:
               if not self.fields[neighbour[0]][neighbour[1]].has_key('clicked') or not self.fields[neighbour[0]][neighbour[1]]['clicked']:
                 self.selectField([neighbour[0], neighbour[1]])
 
-        print self.printMine(i, j, self.fields[i][j]),
+        print self.printField(i, j, self.fields[i][j], isEnd),
 
       print
-      #print 'coveredFieldNum: ', self.coveredField
     print 'remaining: ', self.getRemaining()
 
 
@@ -219,5 +250,4 @@ class Amine:
 
 
 miner = Amine()
-miner.printMiner()
 miner.start()
