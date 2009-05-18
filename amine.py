@@ -1,11 +1,18 @@
 #!/usr/bin/python
+__doc__ = '''
+  A minesweeper game
+'''
+__license__ = 'http://www.gnu.org/licenses/gpl-2.0.html'
+__author__ = 'Lajos Koszti <ajnasz@ajnasz.hu>'
+__copyright__ = 'Copyright 2009, Lajos Koszti'
+
 import random
 import sys
 import measuretime
+import os
 
 
 class Amine:
-  '''A minesweeper game'''
 
 
   def __init__(self, x = 8, y = 8, mines = 10):
@@ -39,7 +46,7 @@ class Amine:
       y = 0
 
       while y < self.max_y:
-        self.fields[x].append({'ismine': 0})
+        self.fields[x].append({'ismine': 0, 'clicked': 0, 'neighbours': -1})
         y = y+1
         
       x = x+1
@@ -203,7 +210,6 @@ class Amine:
 
   def printMiner(self, isEnd=0):
       
-    import os
     os.system(['clear','cls'][os.name == 'nt'])
     if self.message:
       print self.message
@@ -213,14 +219,14 @@ class Amine:
 
       for j, row in enumerate(line):
 
-        if not row.has_key('clicked') or not row['clicked'] == 1 or not row.has_key('ismine') or not row['ismine'] == 1:
+        if row['neighbours'] == -1 and (not row['clicked'] or not row['ismine']):
           neighbours = self.getNeighbours([i,j])
           self.fields[i][j]['neighbours'] = neighbours['sum']
 
           if neighbours['sum'] == 0:
 
             for neighbour in neighbours['neighbours']:
-              if not self.fields[neighbour[0]][neighbour[1]].has_key('clicked') or not self.fields[neighbour[0]][neighbour[1]]['clicked']:
+              if not self.fields[neighbour[0]][neighbour[1]]['clicked']:
                 self.selectField([neighbour[0], neighbour[1]])
 
         print self.printField(i, j, self.fields[i][j], isEnd),
@@ -232,18 +238,17 @@ class Amine:
   def getNeighbours(self, field):
     x = field[0]
     y = field[1]
-    xcases = (x-1, x, x+1)
-    ycases = (y-1, y, y+1)
+    cases = ((x-1, x, x+1), (y-1, y, y+1))
     out = {
       'neighbours': [],
       'sum': 0
     }
-    for xcase in xcases:
+    for xcase in cases[0]:
 
-      for ycase in ycases:
+      for ycase in cases[1]:
 
         try:
-          if not (xcase == x and ycase == y) and xcase >= 0 and ycase >= 0 and self.fields[xcase][ycase] :
+          if not (xcase == x and ycase == y) and xcase >= 0 and ycase >= 0 and self.fields[xcase][ycase]:
             # print 'cases: ', xcase, ycase, self.fields[xcase][ycase]
             out['neighbours'].append((xcase, ycase))
             if self.fields[xcase][ycase].has_key('ismine') and self.fields[xcase][ycase]['ismine']:
