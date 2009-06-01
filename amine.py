@@ -6,10 +6,8 @@ __license__ = 'http://www.gnu.org/licenses/gpl-2.0.html'
 __author__ = 'Lajos Koszti <ajnasz@ajnasz.hu>'
 __copyright__ = 'Copyright 2009, Lajos Koszti'
 
-import random
-import sys
-import measuretime
-import os
+import sys, measuretime, os
+from random import randint 
 
 
 class Amine:
@@ -21,8 +19,8 @@ class Amine:
     self.max_mines = mines
 
     self.mines = []
-    print 'x: %d, y: %d, mines: %d' % (self.max_x, self.max_y, self.max_mines)
     self.genFields()
+    self.showInitData()
     # print self.mines
 
   
@@ -35,6 +33,11 @@ class Amine:
     self.measureTime = measuretime.MeasureTime()
     self.measureTime.start()
     self.readCoords(1)
+
+
+  def showInitData(self):
+    print 'x: %d, y: %d, mines: %d' % (self.max_x, self.max_y, self.max_mines)
+    pass
 
   
   def genFields(self):
@@ -51,8 +54,6 @@ class Amine:
         
       x = x+1
 
-    print x
-    
     
   def genMines(self, click):
     # nums = ([1,1], [2,3], [5,5], [0,6], [7,3], [7,7], [0,7], [5,4], [4,5], [3,5])
@@ -60,7 +61,7 @@ class Amine:
     #   self.setMine(i)
     i = 0
     while i < self.max_mines:
-      random_num = [random.randint(0,self.max_x-1), random.randint(0,self.max_y-1)]
+      random_num = [randint(0,self.max_x-1), randint(0,self.max_y-1)]
 
       if random_num != click:
         if self.setMine(random_num):
