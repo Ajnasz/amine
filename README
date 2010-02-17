@@ -1,0 +1,4 @@
+run:
+./amine.py [number of columns] [number of rows] [number of mines]
+
+default is 8x8 with 10 mines
